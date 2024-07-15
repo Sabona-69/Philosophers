@@ -1,0 +1,6 @@
+Makefile
+a
+philo
+philo.c
+philo.h
+utils.c
