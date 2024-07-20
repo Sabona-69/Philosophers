@@ -17,14 +17,13 @@
 # include <sys/time.h> 	
 # include <pthread.h>
 # include <unistd.h>
+# include <string.h>
 # include <stdlib.h>
-# include <sys/time.h>
 # define FALSE 1
 # define TRUE 0
 
 typedef struct s_fork
 {
-	pthread_mutex_t	forks;
 	int				id;
 }	t_fork;
 
@@ -34,8 +33,8 @@ typedef struct s_philo
 	int				id;
 	int				meals_count;
 	int				died;
-	t_fork			*r_fork;
-	t_fork			*l_fork;
+	int				l_fork;
+	int				r_fork;
 }	t_philo;
 
 typedef struct s_params
@@ -46,7 +45,7 @@ typedef struct s_params
 	long			time_to_sleep;
 	long			start;
 	int				n_meals;
-	t_fork			*forks;
+	pthread_mutex_t	*fork;
 	t_philo			*philos;
 }	t_params;
 
