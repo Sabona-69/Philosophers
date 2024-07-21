@@ -62,7 +62,7 @@ int	init_it(t_params *data)
 		data->philos[i].id = i + 1;
 		data->philos[i].l_fork = i;
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
-		
+		data->philos[i].last_time_eat = get_time();
 	}
 	// ft_print(data);
 	return (1);
@@ -82,16 +82,33 @@ int	parse_it(char **s, t_params *data)
 		|| data->time_to_sleep < 0 || data->n_meals < 0)
 		return (printf("Invalid arguments !\n"), -1);
 	data->philos = malloc(sizeof(t_philo) * data->n_philos);
-	(data->philos) && (data->fork = malloc(sizeof(pthread_mutex_t) * data->n_philos));
-	if (!data->fork || !data->philos)
+	if (!data->philos)
 		return (printf("malloc failed !\n"), -1);
+	data->fork = malloc(sizeof(pthread_mutex_t) * data->n_philos);
+	if (!data->fork)
+	{
+		free(data->philos);
+		data->philos = NULL;
+		return (printf("malloc failed !\n"), -1);
+	}
 	return (0);
+}
+
+// void	free_it(t_params *data)
+// {
+// 	free(data->philos)
+// }
+
+void	f()
+{
+	system("leaks philo");
 }
 
 int	main(int ac, char **av)
 {
 	t_params	*data;
 
+	atexit(f);
 	data = malloc(sizeof(t_params));
 	if (!data)
 		return (printf("malloc failed !\n"), -1);
@@ -102,5 +119,8 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_it(data) == -1)
 		return (1);
-
+	free(data->fork);
+	free(data->philos);
+	free(data);
+	// printf("%ld", get_time());
 }

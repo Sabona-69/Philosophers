@@ -4,7 +4,7 @@ RM		= rm -f
 
 SRC		= philo.c utils.c \
 
-CFLAGS	=  -pthread -g -fsanitize=address -pthread #-Wall -Wextra -Werror
+CFLAGS	=  #-g -fsanitize=address -pthread #-Wall -Wextra -Werror
 
 OBJ		= $(SRC:.c=.o)
 

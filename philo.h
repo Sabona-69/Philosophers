@@ -22,15 +22,11 @@
 # define FALSE 1
 # define TRUE 0
 
-typedef struct s_fork
-{
-	int				id;
-}	t_fork;
-
 typedef struct s_philo
 {
 	pthread_t		philo;
 	int				id;
+	long			last_time_eat;
 	int				meals_count;
 	int				died;
 	int				l_fork;
