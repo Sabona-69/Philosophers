@@ -12,25 +12,19 @@
 
 #include "philo.h"
 
-long	get_time(void)
-{
-	struct timeval	time;
-
-	gettimeofday(&time, 0);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
-}
-
 void ft_print(t_params *data)
 {
+	printf("=============================================\n");
+	printf("number of meals == [%d]\n", data->n_meals);
+	printf("number of philos == [%d]\n", data->n_philos);
+	printf("time to die == [%ld]\n", data->time_to_die);
+	printf("time to eat == [%ld]\n", data->time_to_eat);
+	printf("time to sleep == [%ld]\n", data->time_to_sleep);
+	printf("=============================================\n");
 	int i = -1;
 	while (++i < data->n_philos)
 	{
 		printf("=============================================\n");
-		printf("number of meals == [%d]\n", data->n_meals);
-		printf("number of philos == [%d]\n", data->n_philos);
-		printf("time to die == [%ld]\n", data->time_to_die);
-		printf("time to eat == [%ld]\n", data->time_to_eat);
-		printf("time to sleep == [%ld]\n", data->time_to_sleep);
 		if (data->philos[i].died == FALSE)
 			printf("is he died ? == FALSE\n");
 		else if (data->philos[i].died == TRUE)
@@ -41,29 +35,56 @@ void ft_print(t_params *data)
 	}	
 }
 
-int	parse_init_it(char **s, t_params *data)
+long	get_time(void)
+{
+	struct timeval	time;
+
+	gettimeofday(&time, 0);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+void	routine(data)
+{
+
+}
+
+int	init_it(t_params *data)
+{
+	int	i;
+
+	i = -1;
+	while (++i < data->n_philos)
+	{
+		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
+			return (printf("pthread_mutex_init failed\n"), -1);
+		data->philos[i].died = FALSE;
+		data->philos[i].meals_count = 0;
+		data->philos[i].id = i + 1;
+		data->philos[i].l_fork = i;
+		data->philos[i].r_fork = (i + 1) % data->n_philos;
+		
+	}
+	// ft_print(data);
+	return (1);
+}
+
+int	parse_it(char **s, t_params *data)
 {
 	int		i;
 
-	(1) && (i = -1, data->n_philos = f_atoi(s[1]));
-	(1) && (data->time_to_die = f_atoi(s[2]), data->time_to_eat = f_atoi(s[3]));
+	i = -1;
+	data->n_philos = f_atoi(s[1]);
+	data->time_to_die = f_atoi(s[2]);
+	data->time_to_eat = f_atoi(s[3]);
 	data->time_to_sleep = f_atoi(s[4]);
 	(s[5]) && (data->n_meals = f_atoi(s[5]));
 	if (data->n_philos < 0 || data->time_to_die < 0 || data->time_to_eat < 0
 		|| data->time_to_sleep < 0 || data->n_meals < 0)
-		return (printf("Invalid arguments !123\n"), -1);
+		return (printf("Invalid arguments !\n"), -1);
 	data->philos = malloc(sizeof(t_philo) * data->n_philos);
 	(data->philos) && (data->fork = malloc(sizeof(pthread_mutex_t) * data->n_philos));
 	if (!data->fork || !data->philos)
 		return (printf("malloc failed !\n"), -1);
-	while (++i < data->n_philos)
-	{
-		(1) && (data->philos[i].died = FALSE, data->philos[i].meals_count = 0);
-		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
-			return (printf("pthread_mutex_init failed\n"), -1);
-		data->philos[i].id = i + 1;
-	}
-	ft_print(data);
 	return (0);
 }
 
@@ -77,6 +98,9 @@ int	main(int ac, char **av)
 	memset(data, 0, sizeof(t_params));
 	if (ac > 6 || ac < 5)
 		return (printf("Invalid arguments !\n"), 1);
-	if (parse_init_it(av, data) == -1)
+	if (parse_it(av, data) == -1 )
 		return (1);
+	if (init_it(data) == -1)
+		return (1);
+
 }
