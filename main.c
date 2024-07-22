@@ -1,4 +1,5 @@
 #include <libc.h>
+#!/bin/bash
 
 void f(){
 	system("leaks a.out");

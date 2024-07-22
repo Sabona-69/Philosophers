@@ -35,17 +35,63 @@ void ft_print(t_params *data)
 	}	
 }
 
-long	get_time(void)
+size_t	get_time(void)
 {
 	struct timeval	time;
 
-	gettimeofday(&time, 0);
+	if (gettimeofday(&time, NULL) == -1)
+		write(2, "gettimeofday() error\n", 22);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	routine(data)
+int	ft_usleep(size_t milliseconds)
 {
+	size_t	start;
 
+	start = get_time();
+	while ((get_time() - start) < milliseconds)
+		usleep(500);
+	return (0);
+}
+
+void	print(t_philo *philo, char *action)
+{
+	pthread_mutex_lock(&philo->data->var);
+	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
+	pthread_mutex_unlock(&philo->data->var);
+}
+
+void	*routine(void	*var)
+{
+	t_philo *philo;
+
+	philo = (t_philo *)var;
+	while (1)
+	{
+		// eating action
+		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
+		print(philo, TAKING);
+		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
+		print(philo, TAKING);
+		print(philo, EATING);
+		pthread_mutex_lock(&philo->data->var);
+		philo->last_time_eat = get_time(); // write
+		pthread_mutex_unlock(&philo->data->var);
+		print(philo, EATING);
+		ft_usleep(philo->data->time_to_eat);
+
+		// sleeping action
+			// print state
+		print(philo, SLEEPING);
+		ft_usleep(philo->data->time_to_sleep);
+
+		// print state is thinking
+		print(philo, THINKING);
+		pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
+		pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
+		// usleep(not always `presice) //
+	// sleep(10);
+	}
 }
 
 int	init_it(t_params *data)
@@ -60,10 +106,18 @@ int	init_it(t_params *data)
 		data->philos[i].died = FALSE;
 		data->philos[i].meals_count = 0;
 		data->philos[i].id = i + 1;
+		data->start = get_time();
 		data->philos[i].l_fork = i;
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
 		data->philos[i].last_time_eat = get_time();
+		data->philos[i].data = data;
+		if (pthread_create(&data->philos->philo, NULL, routine, &data->philos[i]) != 0)
+			return (printf("Pthread create failed\n"), -1);
 	}
+	i = -1;
+	while (++i)
+		pthread_join(data->philos[i].philo, NULL);
+	
 	// ft_print(data);
 	return (1);
 }
@@ -108,7 +162,7 @@ int	main(int ac, char **av)
 {
 	t_params	*data;
 
-	atexit(f);
+	// atexit(f);
 	data = malloc(sizeof(t_params));
 	if (!data)
 		return (printf("malloc failed !\n"), -1);
