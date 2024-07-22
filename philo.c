@@ -20,6 +20,7 @@ void ft_print(t_params *data)
 	printf("time to die == [%ld]\n", data->time_to_die);
 	printf("time to eat == [%ld]\n", data->time_to_eat);
 	printf("time to sleep == [%ld]\n", data->time_to_sleep);
+	printf("time to sleep == [%ld]\n", data->time_to_sleep);
 	printf("=============================================\n");
 	int i = -1;
 	while (++i < data->n_philos)
@@ -29,6 +30,8 @@ void ft_print(t_params *data)
 			printf("is he died ? == FALSE\n");
 		else if (data->philos[i].died == TRUE)
 			printf("is he died ? == TRUE\n");
+		printf("r_fork == [%d]\n", data->philos[i].l_fork);
+		printf("l_fork == [%d]\n", data->philos[i].r_fork);
 		printf("Id of philo == [%d]\n", data->philos[i].id);
 		printf("meals counter == [%d]\n", data->philos[i].meals_count);
 		printf("=============================================\n");
@@ -56,66 +59,58 @@ int	ft_usleep(size_t milliseconds)
 
 void	print(t_philo *philo, char *action)
 {
-	pthread_mutex_lock(&philo->data->var);
-	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
-	pthread_mutex_unlock(&philo->data->var);
+	// pthread_mutex_lock(&philo->data->write);
+	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action); // data race
+	// pthread_mutex_unlock(&philo->data->write);
 }
+
+// void	*monitoring(void	*var)
+// {
+// 	t_philo *philo;
+
+// 	philo = (t_philo *)var;
+// 	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)
+// }
 
 void	*routine(void	*var)
 {
 	t_philo *philo;
 
 	philo = (t_philo *)var;
+	if (philo->id % 2 == 0)
+		ft_usleep(philo->data->time_to_eat);
 	while (1)
 	{
-		// eating action
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
 		print(philo, TAKING);
-		print(philo, EATING);
-		pthread_mutex_lock(&philo->data->var);
+		// pthread_mutex_lock(&philo->data->var);
 		philo->last_time_eat = get_time(); // write
-		pthread_mutex_unlock(&philo->data->var);
+		// pthread_mutex_unlock(&philo->data->var);
 		print(philo, EATING);
 		ft_usleep(philo->data->time_to_eat);
-
-		// sleeping action
-			// print state
-		print(philo, SLEEPING);
-		ft_usleep(philo->data->time_to_sleep);
-
-		// print state is thinking
-		print(philo, THINKING);
 		pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
 		pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
-		// usleep(not always `presice) //
-	// sleep(10);
+		print(philo, SLEEPING);
+		ft_usleep(philo->data->time_to_sleep);
+		print(philo, THINKING);
 	}
 }
 
-int	init_it(t_params *data)
+int	start_simulation(t_params *data)
 {
-	int	i;
-
+	int i;	
 	i = -1;
+
+	data->start = get_time();
 	while (++i < data->n_philos)
 	{
-		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
-			return (printf("pthread_mutex_init failed\n"), -1);
-		data->philos[i].died = FALSE;
-		data->philos[i].meals_count = 0;
-		data->philos[i].id = i + 1;
-		data->start = get_time();
-		data->philos[i].l_fork = i;
-		data->philos[i].r_fork = (i + 1) % data->n_philos;
-		data->philos[i].last_time_eat = get_time();
-		data->philos[i].data = data;
 		if (pthread_create(&data->philos->philo, NULL, routine, &data->philos[i]) != 0)
 			return (printf("Pthread create failed\n"), -1);
 	}
 	i = -1;
-	while (++i)
+	while (++i < data->n_philos)
 		pthread_join(data->philos[i].philo, NULL);
 	
 	// ft_print(data);
@@ -145,6 +140,19 @@ int	parse_it(char **s, t_params *data)
 		data->philos = NULL;
 		return (printf("malloc failed !\n"), -1);
 	}
+	i = -1;
+	while (++i < data->n_philos)
+	{
+		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
+			return (printf("pthread_mutex_init failed\n"), -1);
+		data->philos[i].died = FALSE;
+		data->philos[i].meals_count = 0;
+		data->philos[i].id = i + 1;
+		data->philos[i].l_fork = i;
+		data->philos[i].r_fork = (i + 1) % data->n_philos;
+		data->philos[i].last_time_eat = get_time();
+		data->philos[i].data = data;
+	}
 	return (0);
 }
 
@@ -171,7 +179,7 @@ int	main(int ac, char **av)
 		return (printf("Invalid arguments !\n"), 1);
 	if (parse_it(av, data) == -1 )
 		return (1);
-	if (init_it(data) == -1)
+	if (start_simulation(data) == -1)
 		return (1);
 	free(data->fork);
 	free(data->philos);

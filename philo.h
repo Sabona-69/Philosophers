@@ -48,7 +48,7 @@ typedef struct s_params
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
-	long			start;
+	size_t			start;
 	int				n_meals;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	var;
