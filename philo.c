@@ -59,9 +59,9 @@ int	ft_usleep(size_t milliseconds)
 
 void	print(t_philo *philo, char *action)
 {
-	// pthread_mutex_lock(&philo->data->write);
+	pthread_mutex_lock(&philo->data->write);
 	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action); // data race
-	// pthread_mutex_unlock(&philo->data->write);
+	pthread_mutex_unlock(&philo->data->write);
 }
 
 // void	*monitoring(void	*var)
@@ -69,7 +69,7 @@ void	print(t_philo *philo, char *action)
 // 	t_philo *philo;
 
 // 	philo = (t_philo *)var;
-// 	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)
+// 	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)\
 // }
 
 void	*routine(void	*var)
@@ -78,16 +78,16 @@ void	*routine(void	*var)
 
 	philo = (t_philo *)var;
 	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->time_to_eat);
+		ft_usleep(10);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
 		print(philo, TAKING);
-		// pthread_mutex_lock(&philo->data->var);
+		pthread_mutex_lock(&philo->data->var);
 		philo->last_time_eat = get_time(); // write
-		// pthread_mutex_unlock(&philo->data->var);
+		pthread_mutex_unlock(&philo->data->var);
 		print(philo, EATING);
 		ft_usleep(philo->data->time_to_eat);
 		pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
