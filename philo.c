@@ -73,8 +73,10 @@ void	*monitoring(void	*var)
 	{
 		if (philo->last_time_eat - get_time() >= philo->data->time_to_eat)
 		{
+			pthread_mutex_lock(&philo->data->var); 
 			philo->died = TRUE;
 			print(philo, "died");
+			pthread_mutex_unlock(&philo->data->var);
 			return(NULL);
 		}
 	}
@@ -147,12 +149,12 @@ int	parse_it(char **s, t_params *data)
 		if (pthread_create(&data->philos[i].ph_thread, NULL, routine, &data->philos[i]) != 0)
 			return (printf("Pthread create failed\n"), -1);
 	}
-	// if (pthread_create(&data->monitoring, NULL, monitoring, &data->philos) != 0)
-	// 	return (printf("Pthread create failed\n"), -1);
+	if (pthread_create(&data->mo_thread, NULL, monitoring, data->philos) != 0)
+		return (printf("Pthread create failed\n"), -1);
 	i = -1;
 	while (++i < data->n_philos)
 		pthread_join(data->philos[i].ph_thread, NULL);
-	// pthread_detach(data->monitoring);
+	pthread_detach(data->mo_thread);
 	return (0);
 }
 
