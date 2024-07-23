@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/07/13 07:58:32 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:12:47 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,20 @@ int	ft_usleep(size_t milliseconds)
 void	print(t_philo *philo, char *action)
 {
 	pthread_mutex_lock(&philo->data->write);
-	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action); // data race
+	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
 	pthread_mutex_unlock(&philo->data->write);
 }
 
-// void	*monitoring(void	*var)
-// {
-// 	t_philo *philo;
+void	*monitoring(void	*var)
+{
+	t_philo *philo;
 
-// 	philo = (t_philo *)var;
-// 	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)\
-// }
+	philo = (t_philo *)var;
+	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)
+	{
+		pthe
+	}
+}
 
 void	*routine(void	*var)
 {
@@ -98,25 +101,6 @@ void	*routine(void	*var)
 	}
 }
 
-int	start_simulation(t_params *data)
-{
-	int i;	
-	i = -1;
-
-	data->start = get_time();
-	while (++i < data->n_philos)
-	{
-		if (pthread_create(&data->philos->philo, NULL, routine, &data->philos[i]) != 0)
-			return (printf("Pthread create failed\n"), -1);
-	}
-	i = -1;
-	while (++i < data->n_philos)
-		pthread_join(data->philos[i].philo, NULL);
-	
-	// ft_print(data);
-	return (1);
-}
-
 int	parse_it(char **s, t_params *data)
 {
 	int		i;
@@ -141,6 +125,7 @@ int	parse_it(char **s, t_params *data)
 		return (printf("malloc failed !\n"), -1);
 	}
 	i = -1;
+	data->start = get_time();
 	while (++i < data->n_philos)
 	{
 		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
@@ -152,18 +137,13 @@ int	parse_it(char **s, t_params *data)
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
 		data->philos[i].last_time_eat = get_time();
 		data->philos[i].data = data;
+		if (pthread_create(&data->philos->philo, NULL, routine, &data->philos[i]) != 0)
+			return (printf("Pthread create failed\n"), -1);
 	}
+	i = -1;
+	while (++i < data->n_philos)
+		pthread_join(data->philos[i].philo, NULL);
 	return (0);
-}
-
-// void	free_it(t_params *data)
-// {
-// 	free(data->philos)
-// }
-
-void	f()
-{
-	system("leaks philo");
 }
 
 int	main(int ac, char **av)
@@ -179,8 +159,8 @@ int	main(int ac, char **av)
 		return (printf("Invalid arguments !\n"), 1);
 	if (parse_it(av, data) == -1 )
 		return (1);
-	if (start_simulation(data) == -1)
-		return (1);
+	// if (start_simulation(data) == -1)
+	// 	return (1);
 	free(data->fork);
 	free(data->philos);
 	free(data);
