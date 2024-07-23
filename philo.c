@@ -71,17 +71,12 @@ void	*monitoring(void	*var)
 	philo = (t_philo *)var;
 	while (1)
 	{
-		int i = -1;
-		while (++i < philo->                                                                                                       data->n_philos)
+		if (philo->last_time_eat - get_time() >= philo->data->time_to_eat)
 		{
-			if (philo[i].last_time_eat - get_time() >= philo->data->time_to_eat)
-			{
-				philo->died = TRUE;
-				print(philo, "died");
-				return(NULL);
-			}
+			philo->died = TRUE;
+			print(philo, "died");
+			return(NULL);
 		}
-
 	}
 }
 
@@ -149,15 +144,15 @@ int	parse_it(char **s, t_params *data)
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
 		data->philos[i].last_time_eat = get_time();
 		data->philos[i].data = data;
-		if (pthread_create(&data->philos[i].philo, NULL, routine, &data->philos[i]) != 0)
+		if (pthread_create(&data->philos[i].ph_thread, NULL, routine, &data->philos[i]) != 0)
 			return (printf("Pthread create failed\n"), -1);
 	}
-	if (pthread_create(&data->monitoring, NULL, monitoring, &data->philos) != 0)
-		return (printf("Pthread create failed\n"), -1);
+	// if (pthread_create(&data->monitoring, NULL, monitoring, &data->philos) != 0)
+	// 	return (printf("Pthread create failed\n"), -1);
 	i = -1;
 	while (++i < data->n_philos)
-		pthread_join(data->philos[i].philo, NULL);
-	pthread_detach(data->monitoring);
+		pthread_join(data->philos[i].ph_thread, NULL);
+	// pthread_detach(data->monitoring);
 	return (0);
 }
 
@@ -174,8 +169,6 @@ int	main(int ac, char **av)
 		return (printf("Invalid arguments !\n"), 1);
 	if (parse_it(av, data) == -1 )
 		return (1);
-	// if (start_simulation(data) == -1)
-	// 	return (1);
 	free(data->fork);
 	free(data->philos);
 	free(data);
