@@ -44,6 +44,7 @@ typedef struct s_philo
 
 typedef struct s_params
 {
+	pthread_t		monitoring;
 	int				n_philos;
 	long			time_to_die;
 	long			time_to_eat;

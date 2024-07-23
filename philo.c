@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/07/23 18:12:47 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:16:07 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,19 @@ void	*monitoring(void	*var)
 	t_philo *philo;
 
 	philo = (t_philo *)var;
-	if (philo->last_time_eat - get_time() > philo->data->time_to_eat)
+	while (1)
 	{
-		pthe
+		int i = -1;
+		while (++i < philo->                                                                                                       data->n_philos)
+		{
+			if (philo[i].last_time_eat - get_time() >= philo->data->time_to_eat)
+			{
+				philo->died = TRUE;
+				print(philo, "died");
+				return(NULL);
+			}
+		}
+
 	}
 }
 
@@ -84,6 +94,8 @@ void	*routine(void	*var)
 		ft_usleep(10);
 	while (1)
 	{
+		if (philo->died == TRUE)
+			return (NULL);
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
@@ -137,12 +149,15 @@ int	parse_it(char **s, t_params *data)
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
 		data->philos[i].last_time_eat = get_time();
 		data->philos[i].data = data;
-		if (pthread_create(&data->philos->philo, NULL, routine, &data->philos[i]) != 0)
+		if (pthread_create(&data->philos[i].philo, NULL, routine, &data->philos[i]) != 0)
 			return (printf("Pthread create failed\n"), -1);
 	}
+	if (pthread_create(&data->monitoring, NULL, monitoring, &data->philos) != 0)
+		return (printf("Pthread create failed\n"), -1);
 	i = -1;
 	while (++i < data->n_philos)
 		pthread_join(data->philos[i].philo, NULL);
+	pthread_detach(data->monitoring);
 	return (0);
 }
 
@@ -164,5 +179,4 @@ int	main(int ac, char **av)
 	free(data->fork);
 	free(data->philos);
 	free(data);
-	// printf("%ld", get_time());
 }
