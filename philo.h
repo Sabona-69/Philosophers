@@ -36,7 +36,6 @@ typedef struct s_philo
 	int				id;
 	long			last_time_eat;
 	int				meals_count;
-	int				died;
 	int				l_fork;
 	int				r_fork;
 	t_params		*data;
@@ -51,6 +50,7 @@ typedef struct s_params
 	long			time_to_sleep;
 	size_t			start;
 	int				n_meals;
+	int				sm1_died;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	var;
 	pthread_mutex_t write;

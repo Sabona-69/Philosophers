@@ -26,9 +26,9 @@ void ft_print(t_params *data)
 	while (++i < data->n_philos)
 	{
 		printf("=============================================\n");
-		if (data->philos[i].died == FALSE)
-			printf("is he died ? == FALSE\n");
-		else if (data->philos[i].died == TRUE)
+		// if (data->philos[i].died == FALSE)
+		// 	printf("is he died ? == FALSE\n");
+		// else if (data->philos[i].died == TRUE)
 			printf("is he died ? == TRUE\n");
 		printf("r_fork == [%d]\n", data->philos[i].l_fork);
 		printf("l_fork == [%d]\n", data->philos[i].r_fork);
@@ -74,9 +74,9 @@ void	*monitoring(void	*var)
 		if (philo->last_time_eat - get_time() >= philo->data->time_to_eat)
 		{
 			pthread_mutex_lock(&philo->data->var); 
-			philo->died = TRUE;
+			philo->data->sm1_died = TRUE;
 			print(philo, "died");
-			pthread_mutex_unlock(&philo->data->var);
+			// pthread_mutex_unlock(&philo->data->var);
 			return(NULL);
 		}
 	}
@@ -91,7 +91,7 @@ void	*routine(void	*var)
 		ft_usleep(10);
 	while (1)
 	{
-		if (philo->died == TRUE)
+		if (philo->data->sm1_died == TRUE)
 			return (NULL);
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
@@ -135,11 +135,11 @@ int	parse_it(char **s, t_params *data)
 	}
 	i = -1;
 	data->start = get_time();
+	data->sm1_died = FALSE;
 	while (++i < data->n_philos)
 	{
 		if (pthread_mutex_init(&data->fork[i], NULL) == -1)
 			return (printf("pthread_mutex_init failed\n"), -1);
-		data->philos[i].died = FALSE;
 		data->philos[i].meals_count = 0;
 		data->philos[i].id = i + 1;
 		data->philos[i].l_fork = i;
