@@ -44,21 +44,20 @@ void	*monitoring(void	*var)
 	int		i;
 
 	philos = (t_philo *)var;
-	while (1)
+	i = -1;
+	while (++i < philos->data->n_philos)
 	{
-		i = -1;
-		while (++i < philos->data->n_philos)
+		pthread_mutex_lock(&philos->data->var); 
+		if (philos[i].last_time_eat - get_time() >= philos[i].data->time_to_die)
 		{
-			pthread_mutex_lock(&philos->data->var); 
-			if (philos[i].last_time_eat - get_time() >= philos[i].data->time_to_die)
-			{
-				philos->data->sm1_died = TRUE;
-				print(&philos[i], "died");
-				return(NULL);
-			}
-			pthread_mutex_unlock(&philos->data->var);
+			philos->data->sm1_died = TRUE;
+			print(philos, "died");
+			return(NULL);
 		}
+		pthread_mutex_unlock(&philos->data->var);
+		(i == philos->data->n_philos - 1) && (i = -1);
 	}
+	return (NULL);
 }
 
 void	*routine(void	*var)
@@ -89,6 +88,7 @@ void	*routine(void	*var)
 		ft_usleep(philo->data->time_to_sleep);
 		print(philo, THINKING);
 	}
+	return (NULL);
 }
 
 int	parse_it(char **s, t_params *data)
