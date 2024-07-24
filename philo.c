@@ -40,18 +40,23 @@ void	print(t_philo *philo, char *action)
 
 void	*monitoring(void	*var)
 {
-	t_philo *philo;
+	t_philo *philos;
+	int		i;
 
-	philo = (t_philo *)var;
+	philos = (t_philo *)var;
 	while (1)
 	{
-		if (philo->last_time_eat - get_time() >= philo->data->time_to_die)
+		i = -1;
+		while (++i < philos->data->n_philos)
 		{
-			pthread_mutex_lock(&philo->data->var2); 
-			philo->data->sm1_died = TRUE;
-			print(philo, "died");
-			pthread_mutex_unlock(&philo->data->var2);
-			return(NULL);
+			pthread_mutex_lock(&philos->data->var); 
+			if (philos[i].last_time_eat - get_time() >= philos[i].data->time_to_die)
+			{
+				philos->data->sm1_died = TRUE;
+				print(&philos[i], "died");
+				return(NULL);
+			}
+			pthread_mutex_unlock(&philos->data->var);
 		}
 	}
 }
@@ -65,8 +70,10 @@ void	*routine(void	*var)
 		ft_usleep(10);
 	while (1)
 	{
+		pthread_mutex_lock(&philo->data->var);
 		if (philo->data->sm1_died == TRUE)
-			return (NULL);
+			return (pthread_mutex_unlock(&philo->data->var), NULL);
+		pthread_mutex_unlock(&philo->data->var);
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
