@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/07/23 18:16:07 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/07/24 17:28:07 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,29 +33,73 @@ int	ft_usleep(size_t milliseconds)
 
 void	print(t_philo *philo, char *action)
 {
-	pthread_mutex_lock(&philo->data->write);
+	// pthread_mutex_lock(&philo->data->write);
 	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
-	pthread_mutex_unlock(&philo->data->write);
+	// pthread_mutex_unlock(&philo->data->write);
 }
 
-void	*monitoring(void	*var)
-{
-	t_philo *philos;
-	int		i;
+// void	*monitoring(void	*var)
+// {
+// 	t_philo *philos;
+// 	int		i;
 
-	philos = (t_philo *)var;
-	i = -1;
-	while (++i < philos->data->n_philos)
+// 	philos = (t_philo *)var;
+// 	while (1)
+// 	{
+// 		i = 0;
+// 		while (i < philos->data->n_philos)
+// 		{
+// 			pthread_mutex_lock(&philos[i].data->var); 
+// 	printf("--------------%ld\n", get_time() - philos->last_time_eat);
+// 			if (philos[i].last_time_eat - get_time() >= philos[i].data->time_to_die)
+// 			{
+// 				pthread_mutex_lock(&philos[i].data->die);
+// 				philos->data->sm1_died = TRUE;
+// 				pthread_mutex_unlock(&philos[i].data->die);
+// 				print(&philos[i], "died");
+// 				pthread_mutex_unlock(&philos[i].data->var);
+// 				return(NULL);
+// 			}
+// 			pthread_mutex_unlock(&philos[i].data->var);
+// 			i++;
+// 		}
+// 	}
+// }
+
+int	check_die(t_philo *philos)
+{
+	long long	time;
+
+	pthread_mutex_lock(&philos->data->var);
+	if (get_time() - philos->last_time_eat > philos->data->time_to_die)
 	{
-		pthread_mutex_lock(&philos->data->var); 
-		if (philos[i].last_time_eat - get_time() >= philos[i].data->time_to_die)
-		{
-			philos->data->sm1_died = TRUE;
-			print(philos, "died");
-			return(NULL);
-		}
+	pthread_mutex_lock(&philos->data->die);
+		time = get_time() - philos->data->start;
+		if (philos->data->sm1_died == FALSE)
+			printf("%lld %d %s\n", time, philos->id, "die");
+		philos->data->sm1_died = TRUE;
 		pthread_mutex_unlock(&philos->data->var);
-		(i == philos->data->n_philos - 1) && (i = -1);
+		pthread_mutex_unlock(&philos->data->die);
+		return (1);
+	}
+	pthread_mutex_unlock(&philos->data->var);
+	return (0);
+}
+
+void	*monitoring(void *arg)
+{
+	t_philo	*philos;
+	int i;
+	philos = (t_philo *)arg;
+	while (philos->data->sm1_died)
+	{
+		i = 0;
+		while(i < philos->data->n_philos)
+		{
+			if (check_die(&philos[i]))
+				break ;
+			i++;
+		}
 	}
 	return (NULL);
 }
@@ -66,21 +110,24 @@ void	*routine(void	*var)
 
 	philo = (t_philo *)var;
 	if (philo->id % 2 == 0)
-		ft_usleep(10);
+		ft_usleep(60);
 	while (1)
 	{
-		pthread_mutex_lock(&philo->data->var);
+		pthread_mutex_lock(&philo->data->die);
 		if (philo->data->sm1_died == TRUE)
-			return (pthread_mutex_unlock(&philo->data->var), NULL);
-		pthread_mutex_unlock(&philo->data->var);
+		{
+			pthread_mutex_unlock(&philo->data->die);
+			return ( NULL);
+		}
+		pthread_mutex_unlock(&philo->data->die);
 		pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->var);
-		philo->last_time_eat = get_time(); // write
-		pthread_mutex_unlock(&philo->data->var);
+		philo->last_time_eat = get_time(); 
 		print(philo, EATING);
+		pthread_mutex_unlock(&philo->data->var);
 		ft_usleep(philo->data->time_to_eat);
 		pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
 		pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
@@ -88,7 +135,6 @@ void	*routine(void	*var)
 		ft_usleep(philo->data->time_to_sleep);
 		print(philo, THINKING);
 	}
-	return (NULL);
 }
 
 int	parse_it(char **s, t_params *data)
@@ -99,6 +145,9 @@ int	parse_it(char **s, t_params *data)
 	data->time_to_die = f_atoi(s[2]);
 	data->time_to_eat = f_atoi(s[3]);
 	data->time_to_sleep = f_atoi(s[4]);
+	pthread_mutex_init(&data->var, NULL);
+	pthread_mutex_init(&data->write, NULL);
+	pthread_mutex_init(&data->die, NULL);
 	(s[5]) && (data->n_meals = f_atoi(s[5]));
 	if (data->n_philos < 0 || data->time_to_die < 0 || data->time_to_eat < 0
 		|| data->time_to_sleep < 0 || data->n_meals < 0)

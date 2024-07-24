@@ -52,6 +52,7 @@ typedef struct s_params
 	int				n_meals;
 	int				sm1_died;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	die;
 	pthread_mutex_t	var;
 	pthread_mutex_t write;
 	t_philo			*philos;
