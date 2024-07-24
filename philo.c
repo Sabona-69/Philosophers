@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/07/24 17:46:27 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/07/24 19:38:18 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,32 +33,38 @@ int	ft_usleep(size_t milliseconds)
 
 void	print(t_philo *philo, char *action)
 {
-	pthread_mutex_lock(&philo->data->write);
-	printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
-	pthread_mutex_unlock(&philo->data->write);
+	pthread_mutex_lock(&philo->data->die);
+	if (philo->data->sm1_died == TRUE)
+	{
+		pthread_mutex_unlock(&philo->data->die);
+		return ;
+	}
+		printf("%ld\t %d %s\n", get_time() - philo->data->start,  philo->id, action);
+	pthread_mutex_unlock(&philo->data->die);
 }
 
 void	*monitoring(void *arg)
 {
-	t_philo	*philos;
+	t_philo	*philo;
 	int i;
-	philos = (t_philo *)arg;
-	while (philos->data->sm1_died)
+	philo = (t_philo *)arg;
+	while (philo->data->sm1_died)
 	{
 		i = -1;
-		while(++i < philos->data->n_philos)
+		while(++i < philo->data->n_philos)
 		{
-			// pthread_mutex_lock(&philos->data->var);
-			pthread_mutex_lock(&philos->data->die);
-			if (get_time() - philos->last_time_eat >= philos->data->time_to_die)
+			pthread_mutex_lock(&philo->data->var);
+			if (get_time() - philo->last_time_eat >= philo->data->time_to_die)
 			{
-				if (philos->data->sm1_died == FALSE)
-					print(&philos[i], "die");
-				philos->data->sm1_died = TRUE;
-				pthread_mutex_unlock(&philos->data->die);
+			pthread_mutex_lock(&philo->data->die);
+				if (philo->data->sm1_died == FALSE)
+					printf("%ld\t %d %s\n", get_time() - philo[i].data->start,  philo[i].id, "die");
+				philo->data->sm1_died = TRUE;
+				pthread_mutex_unlock(&philo->data->die);
+				pthread_mutex_unlock(&philo->data->var);
 				return (NULL);
 			}
-			pthread_mutex_unlock(&philos->data->die);
+			pthread_mutex_unlock(&philo->data->var);
 		}
 	}
 	return (NULL);
@@ -83,9 +89,16 @@ void	*routine(void	*var)
 		print(philo, TAKING);
 		pthread_mutex_lock(&philo->data->var);
 		philo->last_time_eat = get_time(); 
-		print(philo, EATING);
 		pthread_mutex_unlock(&philo->data->var);
-		ft_usleep(philo->data->time_to_eat);
+		print(philo, EATING);
+		pthread_mutex_lock(&philo->data->die);
+		if (philo->data->sm1_died == TRUE)
+		{
+			pthread_mutex_unlock(&philo->data->die);
+			ft_usleep(philo->data->time_to_eat);
+			return NULL;
+		}
+		pthread_mutex_unlock(&philo->data->die);
 		pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
 		pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
 		print(philo, SLEEPING);
