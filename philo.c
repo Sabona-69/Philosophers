@@ -12,32 +12,6 @@
 
 #include "philo.h"
 
-void ft_print(t_params *data)
-{
-	printf("=============================================\n");
-	printf("number of meals == [%d]\n", data->n_meals);
-	printf("number of philos == [%d]\n", data->n_philos);
-	printf("time to die == [%ld]\n", data->time_to_die);
-	printf("time to eat == [%ld]\n", data->time_to_eat);
-	printf("time to sleep == [%ld]\n", data->time_to_sleep);
-	printf("time to sleep == [%ld]\n", data->time_to_sleep);
-	printf("=============================================\n");
-	int i = -1;
-	while (++i < data->n_philos)
-	{
-		printf("=============================================\n");
-		// if (data->philos[i].died == FALSE)
-		// 	printf("is he died ? == FALSE\n");
-		// else if (data->philos[i].died == TRUE)
-			printf("is he died ? == TRUE\n");
-		printf("r_fork == [%d]\n", data->philos[i].l_fork);
-		printf("l_fork == [%d]\n", data->philos[i].r_fork);
-		printf("Id of philo == [%d]\n", data->philos[i].id);
-		printf("meals counter == [%d]\n", data->philos[i].meals_count);
-		printf("=============================================\n");
-	}	
-}
-
 size_t	get_time(void)
 {
 	struct timeval	time;
@@ -71,12 +45,12 @@ void	*monitoring(void	*var)
 	philo = (t_philo *)var;
 	while (1)
 	{
-		if (philo->last_time_eat - get_time() >= philo->data->time_to_eat)
+		if (philo->last_time_eat - get_time() >= philo->data->time_to_die)
 		{
-			pthread_mutex_lock(&philo->data->var); 
+			pthread_mutex_lock(&philo->data->var2); 
 			philo->data->sm1_died = TRUE;
 			print(philo, "died");
-			// pthread_mutex_unlock(&philo->data->var);
+			pthread_mutex_unlock(&philo->data->var2);
 			return(NULL);
 		}
 	}
@@ -114,7 +88,6 @@ int	parse_it(char **s, t_params *data)
 {
 	int		i;
 
-	i = -1;
 	data->n_philos = f_atoi(s[1]);
 	data->time_to_die = f_atoi(s[2]);
 	data->time_to_eat = f_atoi(s[3]);
@@ -162,7 +135,6 @@ int	main(int ac, char **av)
 {
 	t_params	*data;
 
-	// atexit(f);
 	data = malloc(sizeof(t_params));
 	if (!data)
 		return (printf("malloc failed !\n"), -1);
