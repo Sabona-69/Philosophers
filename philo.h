@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/07/24 17:40:56 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/08/12 18:27:14 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ typedef struct s_params
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
-	size_t			start;
 	int				n_meals;
+	size_t			start;
 	int				sm1_died;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	die;
