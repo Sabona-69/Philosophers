@@ -2,9 +2,9 @@ NAME	= philo
 
 RM		= rm -f
 
-SRC		= philo.c utils.c \
+SRC		= philo.c utils.c actions.c \
 
-CFLAGS	= #-fsanitize=thread -g3 #  -pthread #-Wall -Wextra -Werror
+CFLAGS	= -fsanitize=address -g3 #  -pthread #-Wall -Wextra -Werror
 
 OBJ		= $(SRC:.c=.o)
 

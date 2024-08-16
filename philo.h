@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/12 18:27:14 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/08/16 05:34:08 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define FALSE 1
 # define TRUE 0
 
-typedef struct s_params t_params;
+typedef struct s_params	t_params;
 
 typedef struct s_philo
 {
@@ -43,7 +43,6 @@ typedef struct s_philo
 
 typedef struct s_params
 {
-	pthread_t		mo_thread;
 	int				n_philos;
 	long			time_to_die;
 	long			time_to_eat;
@@ -54,10 +53,20 @@ typedef struct s_params
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	die;
 	pthread_mutex_t	var;
-	pthread_mutex_t write;
+	pthread_mutex_t	write;
+	int				p_die;
+	int				p_var;
+	int				p_write;
 	t_philo			*philos;
 }	t_params;
 
 int		f_atoi(char *s);
+int		safe_malloc_mutex(t_params	*data);
+void	ft_usleep(size_t milliseconds, t_philo *philo);
+int		freeing(char *message, int i, t_params *data);
+void	print(t_philo *philo, char *action);
+size_t	get_time(void);
+void	eating(t_philo *philo);
+void	sleeping(t_philo *philo);
 
 #endif
