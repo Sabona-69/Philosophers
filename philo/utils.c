@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/16 05:34:04 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/08/24 21:48:38 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	freeing(char *message, int i, t_params *data)
 	if (data->p_die == 1)
 		pthread_mutex_destroy(&data->var);
 	if (data->p_write == 1)
-		pthread_mutex_destroy(&data->write);
+		pthread_mutex_destroy(&data->die);
 	free(data->fork);
 	free(data->philos);
 	free(data);

@@ -6,38 +6,37 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 00:04:36 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/16 18:01:14 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/08/25 04:44:18 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	eating(t_philo *philo)
+void	eating(t_philo *philos)
 {
-	pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
-	print(philo, TAKING);
-	pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
-	print(philo, TAKING);
-	pthread_mutex_lock(&philo->data->var);
-	philo->last_time_eat = get_time();
-	philo->meals_count++;
-	pthread_mutex_unlock(&philo->data->var);
-	print(philo, EATING);
-	ft_usleep(philo->data->time_to_eat, philo);
-	pthread_mutex_unlock(&philo->data->fork[philo->r_fork]);
-	pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
+	sem_wait(philos->data->forks);
+	print(philos, TAKING);
+	sem_wait(philos->data->forks);
+	print(philos, TAKING);
+	sem_wait(philos->data->var);
+	philos->last_time_eat = get_time();
+	philos->meals_count++;
+	sem_post(philos->data->var);
+	print(philos, EATING);
+	ft_usleep(philos->data->time_to_eat, philos);
+	sem_post(philos->data->forks);
+	sem_post(philos->data->forks);
 }
 
 void	print(t_philo *philo, char *action)
-{
-	pthread_mutex_lock(&philo->data->die);
+{	sem_wait(philo->data->die);
 	if (philo->data->sm1_died == TRUE)
 	{
-		pthread_mutex_unlock(&philo->data->die);
+		sem_post(philo->data->die);
 		return ;
 	}
 	printf("%ld\t %d %s\n", get_time() - philo->data->start, philo->id, action);
-	pthread_mutex_unlock(&philo->data->die);
+	sem_post(philo->data->die);
 }
 
 void	sleeping(t_philo *philo)

@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/16 18:00:23 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/08/25 04:47:20 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@
 
 # include <stdio.h>
 # include <sys/time.h> 	
-# include <pthread.h>
+# include <semaphore.h>
 # include <unistd.h>
+# include <signal.h>
 # include <string.h>
 # include <stdlib.h>
+# include <fcntl.h>
 
 # define TAKING "has taken a fork"
 # define EATING "is eating"
@@ -32,12 +34,10 @@ typedef struct s_params	t_params;
 
 typedef struct s_philo
 {
-	pthread_t		ph_thread;
+	// pthread_t		ph_thread;
 	int				id;
-	long			last_time_eat;
 	int				meals_count;
-	int				l_fork;
-	int				r_fork;
+	long			last_time_eat;
 	t_params		*data;
 }	t_philo;
 
@@ -50,13 +50,11 @@ typedef struct s_params
 	int				n_meals;
 	size_t			start;
 	int				sm1_died;
-	pthread_mutex_t	*fork;
-	pthread_mutex_t	die;
-	pthread_mutex_t	var;
-	pthread_mutex_t	write;
-	int				p_die;
-	int				p_var;
-	int				p_write;
+	int				*fork_pid;
+	sem_t			*forks;
+	sem_t			*die;
+	sem_t			*var;
+	sem_t			*write;
 	t_philo			*philos;
 }	t_params;
 
