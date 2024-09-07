@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/06 00:53:23 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/07 00:58:02 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,19 @@ size_t get_time(void)
 {
 	struct timeval time;
 
-	if (gettimeofday(&time, NULL) == -1)
-		write(2, "gettimeofday() error\n", 22);
+	gettimeofday(&time, NULL);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+void	freeing(char *message, t_params *data, int i)
+{
+	printf("%s\n", message);
+	(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
+	while (i--)
+		kill(data->philos[i].pid, SIGTERM);
+	free(data->philos);
+	free(data);
+	exit(1);
 }
 
 void ft_usleep(size_t milliseconds, t_philo *philo)

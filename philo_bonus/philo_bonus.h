@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/05 22:59:36 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/07 01:02:31 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,17 @@ typedef struct s_params
 	size_t		start;
 	int			sm1_died;
 	sem_t		*forks;
-	sem_t		*die;
 	sem_t		*var;
 	sem_t		*write;
 	t_philo		*philos;
 } t_params;
 
-int f_atoi(char *s);
-// int safe_malloc_mutex(t_params *data);
-void ft_usleep(size_t milliseconds, t_philo *philo);
-// int freeing(char *message, int i, t_params *data);
-void print(t_philo *philo, char *action);
-size_t get_time(void);
-void eating(t_philo *philo);
-void sleeping(t_philo *philo);
+int		f_atoi(char *s);
+void	ft_usleep(size_t milliseconds, t_philo *philo);
+void	freeing(char *message, t_params *data, int i);
+void	print(t_philo *philo, char *action);
+size_t	get_time(void);
+void	eating(t_philo *philo);
+void	sleeping(t_philo *philo);
 
 #endif

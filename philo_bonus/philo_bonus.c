@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/06 22:31:49 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/07 01:00:03 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,16 @@ void parse_it(char **s, t_params *data)
 	data->time_to_sleep = f_atoi(s[4]);
 	(s[5]) && (data->n_meals = f_atoi(s[5]));
 	if (data->n_philos < 0 || data->time_to_die < 0 || data->time_to_eat < 0 || data->time_to_sleep < 0 || data->n_meals < 0)
-		exit(0);
+		(free(data), printf("Invalid args !\n"), exit(1));
 	(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
 	data->forks = sem_open("/forks", O_CREAT, 0644, data->n_philos);
 	data->write = sem_open("/write", O_CREAT, 0644, 1);
 	data->var = sem_open("/var", O_CREAT, 0644, 1);
+	if (data->forks < 0 || data->write < 0 || data->var < 0)
+	{
+		(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
+		(free(data), printf("sem_open failed !\n"), exit(1));
+	}
 }
 
 void *monitoring(void *arg)
@@ -53,7 +58,8 @@ void *monitoring(void *arg)
 
 void routine(t_philo *philo)
 {
-	pthread_create(&philo->thread, NULL, monitoring, philo);
+	if (pthread_create(&philo->thread, NULL, monitoring, philo) < 0)
+		freeing("pthread_create failed", philo->data, philo->data->n_philos);
 	if (philo->id % 2 == 0)
 		ft_usleep(philo->data->time_to_eat, philo);
 	while (1)
@@ -83,18 +89,15 @@ int init_it(t_params *data)
 		data->philos[i].meals_count = 0;
 		data->philos[i].data = data;
 		data->philos[i].last_time_eat = get_time();
-		// data->philos[i].last_time_eat = get_time();
 	}
 	i = -1;
 	while (++i < data->n_philos)
 	{
 		pid = fork();
-		// if (data->fork_pid[i] == -1)
-		// 	return (freeing("fork() failed", 0, data), -1);
+		if (pid == -1)
+			freeing("fork() failed", data, i);
 		if (pid == 0)
-		{
 			routine(&data->philos[i]);
-		}
 		else
 			data->philos[i].pid = pid;
 	}
@@ -104,17 +107,17 @@ int init_it(t_params *data)
 void wait_for_all(t_params *data)
 {
 	int i;
-	int return_value;
+	int status;
 	int exit_code;
 
-	i = 0;
-	return_value = 1;
-	while (return_value > 0)
+	i = -1;
+	status = 1;
+	while (status > 0)
 	{
-		return_value = waitpid(-1, &exit_code, 0);
+		status = waitpid(-1, &exit_code, 0);
 		if (WEXITSTATUS(exit_code))
-			while (i < data->n_philos)
-				kill(data->philos[i++].pid, SIGTERM);
+			while (++i < data->n_philos)
+				kill(data->philos[i].pid, SIGTERM);
 	}
 	return;
 }
