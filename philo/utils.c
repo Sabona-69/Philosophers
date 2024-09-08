@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/24 21:48:38 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 00:59:05 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	ft_usleep(size_t milliseconds, t_philo *philo)
 			return ;
 		}
 		pthread_mutex_unlock(&philo->data->die);
-		usleep(100);
+		usleep(500);
 	}
 }
 

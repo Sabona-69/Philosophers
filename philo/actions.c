@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 00:04:36 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/16 05:33:07 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 01:03:30 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@ void	eating(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->fork[philo->l_fork]);
 	print(philo, TAKING);
+	if (philo->data->n_philos == 1)
+	{
+		ft_usleep(philo->data->time_to_die, philo);
+		pthread_mutex_unlock(&philo->data->fork[philo->l_fork]);
+		return ;
+	}
 	pthread_mutex_lock(&philo->data->fork[philo->r_fork]);
 	print(philo, TAKING);
 	pthread_mutex_lock(&philo->data->var);

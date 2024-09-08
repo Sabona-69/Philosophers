@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/07 01:02:16 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 01:00:40 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ int	monitoring(t_philo *philo)
 				pthread_mutex_unlock(&philo->data->die);
 				return (pthread_mutex_unlock(&philo->data->var), 0);
 			}
-			else if (philo->meals_count >= philo->data->n_meals
-				&& philo->data->n_meals)
+			if (philo->meals_count >= philo->data->n_meals
+				&& philo->data->n_meals > 1)
 				return (pthread_mutex_unlock(&philo->data->var), 0);
 			pthread_mutex_unlock(&philo->data->var);
 		}
