@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alaassir <alaassir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/07 01:00:03 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 07:13:06 by alaassir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,7 @@ void *monitoring(void *arg)
 		if (get_time() - philo->last_time_eat >= philo->data->time_to_die)
 		{
 			if (philo->data->sm1_died == FALSE)
-				printf("%ld\t %d %s\n", get_time() - philo->data->start,
-						philo->id, "died");
+				print(philo, "died");
 			philo->data->sm1_died = TRUE;
 			return (exit(1), NULL);
 		}	

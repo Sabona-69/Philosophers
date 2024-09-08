@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alaassir <alaassir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 00:04:36 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/08 01:07:24 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 07:14:00 by alaassir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ void eating(t_philo *philos)
 void print(t_philo *philo, char *action)
 {
 	sem_wait(philo->data->write);
-	if (philo->data->sm1_died == TRUE)
+	if (!strcmp(action, "died"))
 	{
-		sem_post(philo->data->write);
+		printf("%ld\t %d %s\n", get_time() - philo->data->start, philo->id, action);
 		return;
 	}
 	printf("%ld\t %d %s\n", get_time() - philo->data->start, philo->id, action);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alaassir <alaassir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/08/19 02:42:17 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 07:05:07 by alaassir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <stdlib.h>
+# include <stdbool.h>
 
 # define TAKING "has taken a fork"
 # define EATING "is eating"
@@ -38,6 +39,7 @@ typedef struct s_philo
 	int				meals_count;
 	int				l_fork;
 	int				r_fork;
+	bool			full;
 	t_params		*data;
 }	t_philo;
 
