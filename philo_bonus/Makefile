@@ -4,15 +4,15 @@ RM		= rm -f
 
 SRC		= philo_bonus.c utils_bonus.c actions_bonus.c \
 
-CFLAGS	= #-fsanitize=thread -g3  #-Wall -Wextra -Werror#-pthread 
+CFLAGS	= -Wall -Wextra -Werror
 
 OBJ		= $(SRC:.c=.o)
 
 CC		= cc
 
-all		: $(NAME) clean
+all		: $(NAME)
 			
-%.o		: %.c philo.h Makefile
+%.o		: %.c philo.h
 			cc $(CFLAGS) -c $<  -o $@
 $(NAME)	: $(OBJ)
 			$(CC) $(CFLAGS) $(OBJ) -o $@

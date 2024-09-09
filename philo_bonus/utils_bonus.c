@@ -6,15 +6,25 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/07 00:58:02 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/09 04:14:03 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-size_t get_time(void)
+int	ft_strcmp(char *s1, char *s2)
 {
-	struct timeval time;
+	while (*s1 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	return (*s1 - *s2);
+}
+
+long	get_time(void)
+{
+	struct timeval	time;
 
 	gettimeofday(&time, NULL);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
@@ -31,9 +41,9 @@ void	freeing(char *message, t_params *data, int i)
 	exit(1);
 }
 
-void ft_usleep(size_t milliseconds, t_philo *philo)
+void	ft_usleep(size_t milliseconds, t_philo *philo)
 {
-	size_t start;
+	size_t	start;
 
 	start = get_time();
 	while ((get_time() - start) < milliseconds)
@@ -42,16 +52,16 @@ void ft_usleep(size_t milliseconds, t_philo *philo)
 		if (philo->data->sm1_died == TRUE)
 		{
 			sem_post(philo->data->var);
-			return;
+			return ;
 		}
 		sem_post(philo->data->var);
 		usleep(100);
 	}
 }
 
-int f_atoi(char *s)
+int	f_atoi(char *s)
 {
-	long res;
+	long	res;
 
 	res = 0;
 	while (*s && (*s == 32 || (*s <= 9 && *s >= 13)))

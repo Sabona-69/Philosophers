@@ -6,13 +6,13 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/08 00:59:05 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/08 22:30:12 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-size_t	get_time(void)
+long	get_time(void)
 {
 	struct timeval	time;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alaassir <alaassir@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/08 07:09:39 by alaassir         ###   ########.fr       */
+/*   Updated: 2024/09/09 03:44:53 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,33 +28,27 @@ int	parse_it(char **s, t_params *data)
 int	monitoring(t_philo *philo)
 {
 	int		i;
-	t_params	*data;
-	int			cnt_full;
 
-	data = philo[0].data;
 	while (1)
 	{
-		i = -1;
-		cnt_full = 0;
-		while (++i < data->n_philos)
+		(1) && (i = -1, philo->data->philo_full = 0);
+		while (++i < philo->data->n_philos)
 		{
-			pthread_mutex_lock(&data->var);
-			if (!philo[i].full && get_time() - philo[i].last_time_eat >= data->time_to_die)
+			pthread_mutex_lock(&philo->data->var);
+			if (get_time() - philo[i].last_time_eat
+				>= philo->data->time_to_die)
 			{
-				pthread_mutex_lock(&data->die);
-				if (data->sm1_died == FALSE)
+				pthread_mutex_lock(&philo->data->die);
+				if (philo->data->sm1_died == FALSE)
 					printf("%ld\t %d %s\n", get_time() - philo[i].data->start,
 						philo[i].id, "died");
-				data->sm1_died = TRUE;
-				pthread_mutex_unlock(&data->die);
-				return (pthread_mutex_unlock(&data->var), 0);
+				philo->data->sm1_died = TRUE;
+				pthread_mutex_unlock(&philo->data->die);
+				return (pthread_mutex_unlock(&philo->data->var), 0);
 			}
-			if (philo[i].meals_count >= data->n_meals
-				&& data->n_meals)
-				(1) && (philo[i].full = true, cnt_full++);
-			if (cnt_full == data->n_philos)
-				return (pthread_mutex_unlock(&data->var), 0);
-			pthread_mutex_unlock(&data->var);
+			if (!check_meals(&philo[i]))
+				return (pthread_mutex_unlock(&philo->data->var), 0);
+			pthread_mutex_unlock(&philo->data->var);
 		}
 	}
 	return (0);
@@ -97,7 +91,6 @@ int	init_it(t_params *data)
 		data->philos[i].r_fork = (i + 1) % data->n_philos;
 		data->philos[i].last_time_eat = get_time();
 		data->philos[i].data = data;
-		data->philos[i].full = false;
 		if (pthread_create(&data->philos[i].ph_thread
 				, NULL, routine, &data->philos[i]) < 0)
 			return (freeing("mutex_init failed", data->n_philos, data), -1);
@@ -108,7 +101,6 @@ int	init_it(t_params *data)
 		pthread_join(data->philos[i].ph_thread, NULL);
 	return (0);
 }
-
 
 int	main(int ac, char **av)
 {

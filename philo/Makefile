@@ -4,7 +4,7 @@ RM		= rm -f
 
 SRC		= philo.c utils.c actions.c \
 
-CFLAGS	= -pthread#-fsanitize=thread -g3 #  -pthread #-Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror #-fsanitize=thread -g3 
 
 OBJ		= $(SRC:.c=.o)
 
@@ -12,7 +12,7 @@ CC		= cc
 
 all		: $(NAME)
 			
-%.o		: %.c philo.h Makefile
+%.o		: %.c philo.h
 			cc $(CFLAGS) -c $<  -o $@
 $(NAME)	: $(OBJ)
 			$(CC) $(CFLAGS) $(OBJ) -o $@
