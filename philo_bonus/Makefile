@@ -12,7 +12,7 @@ CC		= cc
 
 all		: $(NAME)
 			
-%.o		: %.c philo.h
+%.o		: %.c philo_bonus.h
 			cc $(CFLAGS) -c $<  -o $@
 $(NAME)	: $(OBJ)
 			$(CC) $(CFLAGS) $(OBJ) -o $@

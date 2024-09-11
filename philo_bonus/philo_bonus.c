@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/09 04:13:29 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:40:54 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	*monitoring(void *arg)
 	t_philo	*philo;
 
 	philo = arg;
+	philo->data->philo_full = 0;
 	while (1)
 	{
 		sem_wait(philo->data->var);
@@ -50,6 +51,8 @@ void	*monitoring(void *arg)
 		}
 		else if (philo->meals_count >= philo->data->n_meals
 			&& philo->data->n_meals)
+			philo->data->philo_full++;
+		if (philo->data->philo_full == philo->data->n_philos)
 			return (sem_post(philo->data->var), NULL);
 		sem_post(philo->data->var);
 	}
@@ -64,14 +67,12 @@ void	routine(t_philo *philo)
 		ft_usleep(philo->data->time_to_eat, philo);
 	while (1)
 	{
-		sem_wait(philo->data->var);
-		if (philo->data->sm1_died == TRUE || (philo->meals_count
-				>= philo->data->n_meals && philo->data->n_meals))
-			exit(1);
-		sem_post(philo->data->var);
 		eating(philo);
 		sleeping(philo);
 		print(philo, THINKING);
+		if (philo->data->sm1_died == TRUE
+			|| philo->data->philo_full == philo->data->n_philos)
+			break ;
 	}
 	pthread_join(philo->thread, NULL);
 	exit(0);
@@ -108,7 +109,6 @@ int	init_it(t_params *data)
 int	main(int ac, char **av)
 {
 	t_params	*data;
-	int			pid;
 
 	if (ac > 6 || ac < 5)
 		return (printf("Invalid arguments !\n"), 1);
@@ -117,8 +117,7 @@ int	main(int ac, char **av)
 		(printf("malloc failed !\n"), exit(1));
 	memset(data, 0, sizeof(t_params));
 	parse_it(av, data);
-	pid = init_it(data);
-	if (pid != 0)
-		wait_for_all(data);
+	init_it(data);
+	wait_for_all(data);
 	return (1);
 }

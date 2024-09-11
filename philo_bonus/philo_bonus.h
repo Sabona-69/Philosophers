@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/09 04:13:48 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:23:29 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_params
 	int			n_meals;
 	size_t		start;
 	int			sm1_died;
+	int			philo_full;
 	sem_t		*forks;
 	sem_t		*var;
 	sem_t		*write;
