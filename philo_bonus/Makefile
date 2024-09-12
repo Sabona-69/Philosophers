@@ -6,6 +6,7 @@ SRC		= philo_bonus.c utils_bonus.c actions_bonus.c \
 
 CFLAGS	= -Wall -Wextra -Werror
 
+
 OBJ		= $(SRC:.c=.o)
 
 CC		= cc

@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:19:09 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/11 18:23:29 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:01:48 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <signal.h>
 # include <string.h>
 # include <stdlib.h>
-# include <fcntl.h>
 
 # define TAKING "has taken a fork"
 # define EATING "is eating"

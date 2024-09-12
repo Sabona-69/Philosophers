@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 00:04:36 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/11 18:41:20 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/12 18:40:44 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	wait_for_all(t_params *data)
 				kill(data->philos[i].pid, SIGTERM);
 	}
 	(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
-		(free(data), printf("sem_open failed !\n"), exit(0));
+	(free(data->philos), free(data), exit(0));
 	return ;
 }
 
