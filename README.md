@@ -77,4 +77,3 @@ To run the bonus program, execute:
 ## Author
 **hel-omra**  
 [42 Intra Profile](https://profile.intra.42.fr/users/hel-omra)
-```
