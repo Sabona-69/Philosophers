@@ -1,4 +1,3 @@
-```
 # Philosophers - 42 Project
 
 ## Table of Contents
