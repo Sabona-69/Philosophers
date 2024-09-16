@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:59:22 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/09 04:14:03 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:15:57 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ long	get_time(void)
 void	freeing(char *message, t_params *data, int i)
 {
 	printf("%s\n", message);
+	sem_close(data->forks);
+	sem_close(data->write);
+	sem_close(data->write);
 	(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
 	while (i--)
 		kill(data->philos[i].pid, SIGTERM);

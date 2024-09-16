@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/12 19:13:26 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:16:22 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ void	parse_it(char **s, t_params *data)
 	data->var = sem_open("/var", O_CREAT, 0644, 1);
 	if (data->forks < 0 || data->write < 0 || data->var < 0)
 	{
+		sem_close(data->forks);
+		sem_close(data->write);
+		sem_close(data->write);
 		(sem_unlink("/forks"), sem_unlink("/write"), sem_unlink("/var"));
 		(free(data), printf("sem_open failed !\n"), exit(1));
 	}

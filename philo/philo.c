@@ -6,7 +6,7 @@
 /*   By: hel-omra <hel-omra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:02:26 by hel-omra          #+#    #+#             */
-/*   Updated: 2024/09/09 03:44:53 by hel-omra         ###   ########.fr       */
+/*   Updated: 2024/09/16 08:42:50 by hel-omra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,12 +106,12 @@ int	main(int ac, char **av)
 {
 	t_params	*data;
 
+	if (ac > 6 || ac < 5)
+		return (printf("Invalid arguments !\n"), 1);
 	data = malloc(sizeof(t_params));
 	if (!data)
 		return (printf("malloc failed !\n"), 1);
 	memset(data, 0, sizeof(t_params));
-	if (ac > 6 || ac < 5)
-		return (printf("Invalid arguments !\n"), 1);
 	if (parse_it(av, data) == -1)
 		return (freeing("Invalid arguments !", 0, data), 1);
 	if (init_it(data) == -1)
